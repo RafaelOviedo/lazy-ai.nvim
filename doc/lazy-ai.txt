@@ -1,0 +1,100 @@
+*lazy-ai.txt*               LazyAI floating terminal                 *lazy-ai*
+
+==============================================================================
+INTRODUCTION                                             *lazy-ai-introduction*
+
+lazy-ai.nvim runs the LazyAI CLI in a persistent floating terminal.
+Requires Neovim 0.11+ and the LazyAI executable. Install the CLI with: >
+    npm install -g @rafaeloviedo/lazyai
+<
+LazyAI requires Node.js 20+ and a locally authenticated Claude Code or Codex
+provider. Verify the CLI outside Neovim before using the plugin.
+CLI documentation: https://github.com/RafaelOviedo/lazy-ai
+
+==============================================================================
+COMMANDS                                                     *lazy-ai-commands*
+
+:LazyAI                                                              *:LazyAI*
+    Toggle the terminal. Hiding preserves the running session.
+
+:LazyAIOpen                                                       *:LazyAIOpen*
+    Open or focus the terminal and enter terminal-input mode if it is running.
+
+:LazyAIClose                                                     *:LazyAIClose*
+    Hide the window without stopping the job.
+
+:LazyAIStop                                                       *:LazyAIStop*
+    Stop the process and discard its terminal buffer.
+
+:LazyAIRestart                                                 *:LazyAIRestart*
+    Stop and start again using the current command and working directory.
+
+:checkhealth lazy-ai
+    Check the Neovim version, configured executable, and working directory.
+    Provider authentication is checked by the CLI, not this health check.
+
+There is one terminal session per Neovim instance, shared across tabs. Opening
+a visible session focuses its tab/window. Manual window closure hides it;
+deleting its buffer stops it. Neovim exit stops the session.
+
+Exit code 0 closes and cleans up the terminal. Other exit codes keep output for
+inspection. Reopen a hidden failed session with :LazyAI; restart to retry.
+
+Use CTRL-\ CTRL-N to leave terminal-input mode (|terminal-input|). No keys are
+mapped by default; Esc and q are passed through to LazyAI. Optional mapping: >lua
+    vim.keymap.set({ "n", "t" }, "<leader>la", function()
+      require("lazy-ai").toggle()
+    end, { desc = "Toggle LazyAI" })
+<
+==============================================================================
+CONFIGURATION                                                  *lazy-ai-setup*
+
+Setup is optional. Defaults: >lua
+    require("lazy-ai").setup({
+      cmd = { "lazyai" },
+      win = { width = 0.92, height = 0.90, border = "rounded" },
+    })
+<
+cmd
+    Nonempty list of executable and arguments, passed without a shell.
+    Use an absolute executable path if it is not on Neovim's PATH.
+
+cwd
+    Default: nil (current Neovim working directory).
+    Directory string or function returning a directory or nil. Evaluated in
+    the caller's buffer before starting a new session. Example: >lua
+      cwd = function()
+        return vim.fs.root(0, { ".git" }) or vim.fn.getcwd()
+      end,
+<
+win.width, win.height
+    Fraction greater than 0 and less than 1, or a positive integer cell count.
+    Clamped to the available editor size. Recomputed on |VimResized|.
+
+win.border
+    Built-in border name: none, single, double, rounded, solid, or shadow.
+
+Each setup call merges with defaults. Window settings update immediately;
+command/cwd changes apply to the next new session. Hiding/reopening retains the
+original working directory even after :cd. Use :LazyAIRestart to switch projects.
+
+==============================================================================
+LUA API                                                        *lazy-ai-api*
+
+require("lazy-ai").setup(opts)       Validate and apply configuration.
+require("lazy-ai").open()            Open or focus the session.
+require("lazy-ai").close()           Hide without stopping.
+require("lazy-ai").toggle()          Toggle visibility.
+require("lazy-ai").stop()            Stop and discard the session.
+require("lazy-ai").restart()         Stop, then open a fresh session.
+
+==============================================================================
+TROUBLESHOOTING                                      *lazy-ai-troubleshooting*
+
+Run :checkhealth lazy-ai first. For missing executables, check Neovim's PATH or
+set an absolute cmd path. For a wrong project, check :pwd and restart. For
+provider/authentication failures, run the CLI outside Neovim and follow its
+setup documentation. Failed-process output remains available in the terminal;
+notifications are also available through :messages.
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
