@@ -41,11 +41,16 @@ Exit code 0 closes and cleans up the terminal. Other exit codes keep output for
 inspection. Reopen a hidden failed session with :LazyAI; restart to retry.
 
 Use CTRL-\ CTRL-N to leave terminal-input mode (|terminal-input|). No keys are
-mapped by default; Esc and q are passed through to LazyAI. Optional mapping: >lua
-    vim.keymap.set({ "n", "t" }, "<leader>la", function()
-      require("lazy-ai").toggle()
-    end, { desc = "Toggle LazyAI" })
+mapped by default; Esc and q are passed through to LazyAI. Press q on the
+dashboard to quit and close the window; q in a text input is ordinary text.
+This optional normal-mode mapping only opens or focuses LazyAI. Typing in the
+terminal will not trigger it: >lua
+    vim.keymap.set("n", "<leader>la", function()
+      require("lazy-ai").open()
+    end, { desc = "Open LazyAI" })
 <
+If replacing an older terminal-mode toggle mapping, restart Neovim to remove it.
+
 ==============================================================================
 CONFIGURATION                                                  *lazy-ai-setup*
 

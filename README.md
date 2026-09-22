@@ -32,9 +32,9 @@ With [lazy.nvim](https://github.com/folke/lazy.nvim):
   keys = {
     {
       "<leader>la",
-      function() require("lazy-ai").toggle() end,
-      mode = { "n", "t" },
-      desc = "Toggle LazyAI",
+      function() require("lazy-ai").open() end,
+      mode = "n",
+      desc = "Open LazyAI",
     },
   },
 }
@@ -62,9 +62,12 @@ Opening a visible session focuses its window, including switching to its tab.
 Closing the float manually also keeps the session alive. Deleting its terminal
 buffer stops the process.
 
-The terminal opens in terminal-input mode. LazyAI receives normal keystrokes,
-including `Esc` and `q`. Use `<C-\><C-n>` to enter terminal-normal mode,
-then run a Neovim command. The optional toggle mapping works in both modes.
+The optional `<leader>la` shortcut only works in normal mode and opens or focuses
+LazyAI. It never closes the window.
+
+Press `q` on the LazyAI dashboard to quit and close its window. Inside a text
+input, `q` remains a normal character. Use `<C-\><C-n>` to enter terminal-normal
+mode when you need to run a Neovim command.
 
 A successful process exit closes the float and removes its buffer. A nonzero
 exit retains output for inspection and reports the exit code. If the float was
@@ -114,6 +117,10 @@ Each `setup()` call merges its options with defaults and immediately updates
 the visible float's appearance.
 
 ## Troubleshooting
+
+- **Typing Space + la closes LazyAI:** replace any older terminal-mode toggle
+  mapping with the normal-mode `open()` mapping above, then restart Neovim to
+  remove the old mapping.
 
 - **Executable not found:** run `:checkhealth lazy-ai`. Neovim may inherit a
   different `PATH` from your shell, especially in a GUI. Set
