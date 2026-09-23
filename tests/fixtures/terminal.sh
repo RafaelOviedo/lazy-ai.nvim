@@ -1,7 +1,8 @@
 #!/bin/sh
-printf 'fixture ready\n'
 printf 'cwd=%s\n' "$PWD"
 printf 'arg=%s\n' "$1"
+# Signal readiness only after all startup output has been written.
+printf 'fixture ready\n'
 while IFS= read -r line; do
   case "$line" in
     exit) exit 0 ;;
