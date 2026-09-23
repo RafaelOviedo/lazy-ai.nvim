@@ -5,7 +5,7 @@ M.defaults = {
 	cwd = nil,
 	win = {
 		width = 0.92,
-		height = 0.90,
+		height = 0.92,
 		border = "rounded",
 	},
 }
@@ -20,10 +20,7 @@ end
 
 local function dimension(value, name)
 	check(
-		type(value) == "number"
-			and value > 0
-			and value < math.huge
-			and (value < 1 or value == math.floor(value)),
+		type(value) == "number" and value > 0 and value < math.huge and (value < 1 or value == math.floor(value)),
 		name .. " must be a fraction between 0 and 1, or a positive integer"
 	)
 end
@@ -56,7 +53,10 @@ function M.setup(opts)
 	dimension(options.win.width, "win.width")
 	dimension(options.win.height, "win.height")
 	local borders = { none = true, single = true, double = true, rounded = true, solid = true, shadow = true }
-	check(type(options.win.border) == "string" and borders[options.win.border], "win.border must be a built-in border name")
+	check(
+		type(options.win.border) == "string" and borders[options.win.border],
+		"win.border must be a built-in border name"
+	)
 	M.options = options
 	return options
 end
